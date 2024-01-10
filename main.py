@@ -1,5 +1,4 @@
-import templates.menus as menu
-import templates.reusable as reusable
+import Modulos.menus as menu
 import Modulos.campers as sc
 import Modulos.notas as notas
 import Modulos.campusland as campus
@@ -54,7 +53,7 @@ if __name__ == '__main__':
             notas.moduloReportes()
         elif(opMenu == "9"):
             print("salir")
-            reusable.showSuccess("Gracias Por usar el Sistema")
+            menu.showSuccess("Gracias Por usar el Sistema")
             break
         else:
-            reusable.showError("Opcion No Valida Intentalo de Nuevo")
+            menu.showError("Opcion No Valida Intentalo de Nuevo")

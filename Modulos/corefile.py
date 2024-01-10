@@ -2,7 +2,7 @@ import json
 import os
 
 
-PATH = "./Nivel_Experto/db/"
+PATH = "./PROYECTO_VRS_2/data"
 URL = ""
 
 def newFile(**kwargs):

@@ -1,6 +1,5 @@
-import Modulos.corefile as db
-import templates.menus as mn
-import templates.reusable as reusable
+import Modulos.corefile as data
+import Modulos.menus as menu
 import Modulos.campusland as campus
 
 Estudiantes = {}
@@ -40,7 +39,7 @@ def newEstudiante():
             Estudiante["telefono"]["fijo"] = input("str", f"Ingresa el Numero Fijo del Estudiante")
             Estudiante["acudiente"] = input("str", f"Nombre del Acudiente de {Estudiante['nombre']}")
             Estudiantes.update({Estudiante["cc"]:Estudiante})
-            db.newFile(**Estudiantes)
+            data.newFile(**Estudiantes)
             print(f"Estudiante {Estudiante['nombre']} Creado Correctamente")
         else:
             yes = input("Prefiere Editar los Estudiantes en Lugar de Crear uno Nuevo? ingrese S para si, enter para no")
@@ -51,8 +50,8 @@ def newEstudiante():
             break
 
 def editarEstudiante():
+    print("editar Estudiante")
     while True:
-        mn.showHeader("editarEstudiante")
         Estudiante = getEstudiante()
         if Estudiante:
             for key, value in Estudiante.items():
@@ -62,7 +61,7 @@ def editarEstudiante():
                         if (Seleccion.lower()):
                             data = input("str", f"Ingresa {key}")
                             Estudiante.update({key: data})
-                            db.newFile(**Estudiantes)
+                            data.newFile(**Estudiantes)
                             print("El Estudiante se Edito Correctamente")
         Desicion= input("Desea Editar Otro Estudiante")
         if not Desicion.lower():
@@ -86,68 +85,68 @@ def getEstudiante():
 
 def matricular():
     while(True):
-        mn.showHeader("matricula")
+        print("Matricula")
         Estudiante = getEstudiante()
         if Estudiante:
             if (Estudiante["estado"] == "aprobado"):
                 campus.loadCampuslanDB()
-                mn.showHeader("rutas1")
-                rutas = campus.campuslandDB.get("rutas")
-                reusable.printList(list(rutas.keys()))
-                opcion = reusable.input("str", "Ingresa el Nombre de la Ruta")
+                print("Ruta a tomar")
+                rutas = campus.campuslanddata.get("rutas")
+                menu.printList(list(rutas.keys()))
+                opcion = menu.input("str", "Ingresa el Nombre de la Ruta")
                 if opcion in rutas:
                     ruta = rutas.get(opcion)
                     grupos = rutas[opcion]["grupos"]
                     trainers = rutas[opcion]["trainers"]
                     while True:
                         print(f"Trainers Disponibles {ruta['trainers']}")
-                        trainer = reusable.input("str", f"Ingresa El Nombre del Trainer Para Asigarle a {Estudiante['nombre']}")
+                        trainer = menu.input("str", f"Ingresa El Nombre del Trainer Para Asigarle a {Estudiante['nombre']}")
                         if trainer in trainers:
-                            dataTrainer = campus.campuslandDB["trainers"][trainer]
+                            dataTrainer = campus.campuslanddata["trainers"][trainer]
                             while True:
                                 print(f"Grupos Disponibles {ruta['grupos']}")
-                                grupo = reusable.input("str", f"Ingresa El Nombre del Grupo Para Asigarle a {Estudiante['nombre']}")
+                                grupo = menu.input("str", f"Ingresa El Nombre del Grupo Para Asigarle a {Estudiante['nombre']}")
                                 if (grupo in dataTrainer["grupos"]) and (grupo in ruta["grupos"]):
-                                    dataGrupo = campus.campuslandDB.get("grupos").get(grupo)
+                                    dataGrupo = campus.campuslanddata.get("grupos").get(grupo)
                                     if len(dataGrupo) <= 33:
                                         Estudiante.update({"ruta": ruta["nombreRuta"]})
                                         Estudiante.update({"trainer": trainer})
                                         Estudiante.update({"grupo": grupo})
                                         Estudiante.update({"estado": "estudiando"})
                                         dataGrupo.append(Estudiante["cc"])
-                                        db.updateDataBases()
-                                        reusable.showSuccess("Se Matriculo Correctamente")
+                                        data.updateDataBases()
+                                        print("Se Matriculo Correctamente")
                                         return
                                     else:
-                                        reusable.showError(f"{ruta['nombreRuta']} Llego al Maximo de Estudiantes")
+                                        print(f"{ruta['nombreRuta']} Llego al Maximo de Estudiantes")
                                         return
                                 else:
-                                    reusable.showError(f"Ingresa el Grupo del Trainer {dataTrainer['nombre'].upper()}")
+                                    print(f"Ingresa el Grupo del Trainer {dataTrainer['nombre'].upper()}")
                         else:
-                            reusable.showError("Ingresa el Nombre del Trainer Correctamente")
+                            print("Ingresa el Nombre del Trainer Correctamente")
                 else:
-                    reusable.showError("Esta Ruta No Exite Ingresa Datos Reales")
+                    print("Esta Ruta No Exite Ingresa Datos Reales")
             else:
-                reusable.showInfo("El Estado del Estudiante No es Valido Para Esta Opcion")
+                print("El Estado del Estudiante No es Valido Para Esta Opcion")
         else:
-            reusable.showInfo(f"No se Encontro al Estudiante")
-
-        if not reusable.yesORnot("Desea Intentar Con Otro Estudiante"):
+            print(f"No se Encontro al Estudiante")
+        tomar= input("Desea Intentar Con Otro Estudiante")
+        if not tomar.lower():
             break
 
 
 def delEstudiante():
-    mn.showHeader("eliminarEstudiante")
+    print("eliminarEstudiante")
     Estudiante = getEstudiante()
     if Estudiante:
         Estudiantes.pop(Estudiante["cc"])
-        db.newFile(**Estudiantes)
-        reusable.showSuccess("El Estudiante Se Borro Correctamente")
+        data.newFile(**Estudiantes)
+        print("El Estudiante Se Borro Correctamente")
     else:
-        reusable.showError("Este Usuario no Existe en la Base de Datos")
+        print("Este Usuario no Existe en la Base de Datos")
 
 URL = "Estudiantes.json"
 
 def BusquedaEstudiante():
-    db.URL = URL
-    Estudiantes.update(db.checkFile(**Estudiantes))
+    data.URL = URL
+    Estudiantes.update(data.checkFile(**Estudiantes))

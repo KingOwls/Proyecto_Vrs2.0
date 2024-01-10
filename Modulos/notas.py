@@ -1,44 +1,43 @@
 import Modulos.campers as sc
 import Modulos.corefile as db
-import templates.reusable as reusable
-import templates.menus as menu
+import Modulos.menus as menu
 import Modulos.campusland as campus
 
 
 def pruebaAdmision():
     while(True):
-        menu.showHeader("prueba")
+        print("prueba")
         Estudiante = sc.getEstudiante()
         if Estudiante:
             if (Estudiante["estado"] == "inscrito"):
-                teorica = reusable.checkInput("float", f"Ingresa la nota de la prueba teorica de {Estudiante['nombre']}")
-                practica = reusable.checkInput("float", f"Ingresa la nota de la prueba practica de {Estudiante['nombre']}")
+                teorica = menu.checkInput("float", f"Ingresa la nota de la prueba teorica de {Estudiante['nombre']}")
+                practica = menu.checkInput("float", f"Ingresa la nota de la prueba practica de {Estudiante['nombre']}")
                 nota = (teorica + practica) / 2
                 if (nota >= 60):
                     Estudiante["estado"] = "aprobado"
                 else:
                     Estudiante["estado"] = "no_aprobado"
 
-                reusable.showSuccess("Se Actualizo la Nota Correctamente")
+                print("Se Actualizo la Nota Correctamente")
                 
             elif(Estudiante["estado"] == "no_aprobado"):
-                reusable.showInfo(f"El Estudiante {Estudiante['nombre']} ya Presento las Pruebas y NO fue apto")
+                print(f"El Estudiante {Estudiante['nombre']} ya Presento las Pruebas y NO fue apto")
             elif(Estudiante["estado"] == "aprobado"):
-                reusable.showInfo(f"El Estudiante {Estudiante['nombre']} ya Presento las Pruebas y Aprobo")
+                print(f"El Estudiante {Estudiante['nombre']} ya Presento las Pruebas y Aprobo")
             else:
-                reusable.showInfo(f"El estado de {Estudiante['nombre']} no es apto para esta opcion")
+                print(f"El estado de {Estudiante['nombre']} no es apto para esta opcion")
 
         else:
-            reusable.showInfo("No se Encontro el Estudiante")
+            print("No se Encontro el Estudiante")
         
-        if(not reusable.yesORnot("Desea Registrar la Nota de otro Estudiante")):
+        if(not menu.yesORnot("Desea Registrar la Nota de otro Estudiante")):
                 db.URL = "Estudiantes.json"
                 db.newFile(**sc.Estudiantes)
                 break
 
 def menuNotas():
     while True:
-        opcion = input(menu.showMenu("notas"))
+        opcion = input("notas: 1) Fundamentos, 2) Web 3) Formal , 4) Base de datos, 5) Backend, 6)Salida")
         if (opcion == "1"):
             return "moduloFundamentos"
         elif(opcion == "2"):
@@ -49,22 +48,24 @@ def menuNotas():
             return "moduloBaseDatos"
         elif(opcion == "5"):
             return "moduloBackend"
+        elif(opcion == "6"):
+            break
         else:
-            reusable.showError("Opcion No Valida Intentalo De Nuevo")
+            print("Opcion No Valida Intentalo De Nuevo")
 
 def registrarNotas():
-    menu.showHeader("registrarNotas")
+    print("registrarNotas")
     Estudiante = sc.getEstudiante()
     if Estudiante:
         if Estudiante["estado"] == "estudiando":
             key = menuNotas()
             notas = Estudiante.get("notas")
             if key in list(notas.keys()):
-                reusable.showError("Las Notas De Este Modulo Ya se Registraron")
+                print("Las Notas De Este Modulo Ya se Registraron")
             else:
-                notaPruebaTecnica = (reusable.checkInput("float", "Ingresa la Nota de la Prueba Tecnica")*0.6)
-                notaPruebaTeorica = (reusable.checkInput("float", "Ingresa la Nota de la Prueba Teorica")*0.3)
-                notasTrabajosQuizes = (reusable.checkInput("float", "Ingresa la Definitiva de Trabajos y Quizes")*0.1)
+                notaPruebaTecnica = (input("float", "Ingresa la Nota de la Prueba Tecnica")*((60)/100))
+                notaPruebaTeorica = (input("float", "Ingresa la Nota de la Prueba Teorica")*(30)/100)
+                notasTrabajosQuizes = (input("float", "Ingresa la Definitiva de Trabajos y Quizes")*(10)/100)
                 definitiva = (notaPruebaTecnica + notaPruebaTeorica + notasTrabajosQuizes)
                 notas.update({key:{
                     "notaPruebaTecnica": notaPruebaTecnica,
@@ -74,84 +75,11 @@ def registrarNotas():
                 }})
                 db.URL = sc.URL
                 db.newFile(**sc.Estudiantes)
-                reusable.showSuccess("Se Registraron las Notas Correctamente")
+                print("Se Registraron las Notas Correctamente")
         else:
-            reusable.showInfo("El Estado del Estudiante No es Valido Para Esta Opcion")
+            print("El Estado del Estudiante No es Valido Para Esta Opcion")
     else:
-        reusable.showError("No Se Encontro al Estudiante")
-
-def moduloReportes():
-    sc.BusquedaEstudiante()
-    campus.loadCampuslanDB()
-    Estudiantes = sc.Estudiantes
-    campuslandDB = campus.campuslandDB
-    while True:
-        opcion = input(menu.showMenu("reportes"))
-        if (opcion == "1"):
-            reusable.printList(newReporte("inscrito", Estudiantes))
-        elif(opcion == "2"):
-            reusable.printList(newReporte("aprobado", Estudiantes))
-        elif(opcion == "3"):
-            menu.showHeader("trainers")
-            trainers = campuslandDB.get("trainers")
-            reusable.printList(list(trainers.keys()))
-        elif(opcion == "4"):
-            reusable.printList(bajoNotas(Estudiantes))
-        elif(opcion == "5"):
-            menu.showHeader("rutas1")
-            rutas = campuslandDB["rutas"]
-            reusable.printList(list(rutas.keys()))
-            rutaName = reusable.checkInput("str", "Ingresa el Nombre de la Ruta")
-            if rutaName in list(rutas.keys()):
-                menu.showHeader("infoRutas")
-                ruta = rutas[rutaName]
-                print(f"Nombre de la Ruta: {ruta['nombreRuta']}")
-                print(f"Trainers de la Ruta: ", end="")
-                for trainer in ruta["trainers"]:
-                    print(trainer.upper(), end="")
-                print("")
-                print(f"Estudiantes De la Ruta {ruta['nombreRuta']}")
-                grupos = ruta["grupos"]
-                estudiantes = []
-                for Estudiante in Estudiantes.values():
-                    if "grupo" in Estudiante.keys():
-                        if (Estudiante["grupo"] in grupos):
-                            estudiantes.append(f"CC: {Estudiante['cc']} Nombre: {Estudiante['nombre']}")
-                
-                if not len(estudiantes):
-                    print("No Se Encontraron Estudiantes")
-
-                reusable.printList(estudiantes)
-            else:
-                print("No se Encontro la ruta a Mostrar")
-        elif(opcion == "6"):
-            perModul = {}
-            pasaron = 0
-            perdieron = 0
-            for Estudiante in Estudiantes.values():
-                notas = Estudiante["notas"]
-                for key,value in notas.items():
-                    nota = value["definitiva"]
-                    if nota < 60:
-                        perdieron += 1 
-                    else:
-                        pasaron += 1
-
-                    perModul.update({key: {"pasaron": pasaron, "perdieron":perdieron}})
-            message = "Falta Registrar Notas De Algunos Modulos Intentalo de Nuevo mas Tarde"
-            for key, value in perModul.items():
-                reusable.showSuccess(f"En el Modulo {key} Pasaron:{value['pasaron']} y Perdieron: {value['perdieron']}")
-                if key == "backend":
-                    message = ""
-            
-            if message:
-                reusable.showInfo(message)
-
-
-        elif(opcion == "7"):
-            return
-        else:
-            reusable.showError("Opcion No Valida Intentalo de Nuevo")
+        print("No Se Encontro al Estudiante")
 
 
 def bajoNotas(Estudiantes):
