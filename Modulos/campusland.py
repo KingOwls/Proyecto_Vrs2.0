@@ -1,131 +1,126 @@
-
-
-import services.corefile as db
+import Modulos.corefile as db
 import templates.reusable as reusable
-import templates.menus as menu
+import templates.menus as mn
 
 campuslandDB = {
-    "areas":{
+    "zones":{
         "artemis":{
             "nombre": "artemis",
-            "morning": [],
-            "afternoon": []
+            "morning": ["I1_1"]
         },
         "sputnik":{
             "nombre": "sputnik",
-            "morning": ["m1_2"],
-            "afternoon": []
+            "morning": ["m1_1"],
         },
         "apolo":{
             "nombre": "apolo",
-            "morning": ["j1_1", "j2_1"],
-            "afternoon": []
+            "morning": ["j1_1"],
         }
     },
 
     "rutas": {
         "nodejs":{
-            "nombreRuta": "nodejs",
-            "area": "sputnik",
-            "fechaInicio": "27-11-2023",
-            "fechaFinal": "3-6-2024",
+            "NameRt": "nodejs",
+            "zone": "sputnik",
+            "FchInc": "03-12-2024",
+            "FchFnl": "30-04-2025",
             "trainers": ["miguel"],
-            "grupos":["m1_2"],
+            "grupos":["m1_1"],
             "jornada": "morning",
             "fundamentosProgramacion": ["Introducción a la algoritmia", "PSeInt"],
-            "programacionWEB": ["HTML","Bootstrap"],
+            "programacionWEB": ["HTML"],
             "programacionFormal": ["JavaScript", "C#"],
             "basesDatos": ["MongoDB", "MySql"],
             "backend": ["NodeJS", "Express"]
         },
         "java":{
-            "nombreRuta": "java",
-            "area": "apolo",
-            "fechaInicio": "27-11-2023",
-            "fechaFinal": "3-6-2024",
+            "NameRt": "java",
+            "zone": "apolo",
+            "FchInc": "03-12-2024",
+            "FchFnl": "30-04-2025",
             "trainers": ["johlver"],
             "grupos": ["j1_1"],
             "jornada": "morning",
             "fundamentosProgramacion": ["Introducción a la algoritmia", "PSeInt"],
-            "programacionWEB": ["HTML","CSS"],
-            "programacionFormal": ["Java", "C#"],
+            "programacionWEB": ["HTML"],
+            "programacionFormal": ["Java"],
             "basesDatos": ["Postgresql", "MySql"],
             "backend": ["Spring Boot", "Express"]
         },
         "netcore":{
-            "nombreRuta": "netcore",
-            "area": "apolo",
-            "fechaInicio": "9-1-2024",
-            "fechaFinal": "15-7-2024",
-            "trainers": ["johlver"],
-            "grupos": ["j2_1"],
+            "NameRt": "netcore",
+            "zone": "apolo",
+            "FchInc": "03-12-2024",
+            "FchFnl": "30-04-2025",
+            "trainers": ["Ingeniero"],
+            "grupos": ["I1_1"],
             "jornada": "morning",
             "fundamentosProgramacion": ["Introducción a la algoritmia", "PSeInt"],
-            "programacionWEB": ["HTML","CSS"],
-            "programacionFormal": ["Java", "C#"],
+            "programacionWEB": ["CSS"],
+            "programacionFormal": ["C#"],
             "basesDatos": ["Postgresql", "MySql"],
             "backend": ["NetCore", "POO"]
         }
     },
 
     "trainers":{
+        "Ingeniero":{
+            "uid": "1",
+            "nombre": "Ingeniero",
+            "jornada": "morning",
+            "grupos": ["I1_1"]
+        },
         "johlver":{
             "uid": "1",
             "nombre": "johlver",
             "jornada": "morning",
-            "grupos": ["j1_1", "j2_1"]
+            "grupos": ["j1_1"]
         },
         "miguel":{
             "uid": "2",
             "nombre": "miguel",
             "jornada": "morning",
-            "grupos": ["m1_2"]
+            "grupos": ["m1_1"]
         }
     },
 
     "grupos": {
         "j1_1": [],
-        "j2_1": [],
-        "m1_2": []
+        "I1_1": [],
+        "m1_1": []
     }
 
 }
 
 
 
-def newArea():
+def newzone():
     loadCampuslanDB()
-    menu.showHeader("areas")
-    areas = campuslandDB.get("areas")
-    reusable.printList(list(areas.keys()))
-    opcion = reusable.yesORnot("\nEstas Seguro que Desea Crear Nueva Area de Entrenamiento? ")
-    if opcion:
-        reusable.showInfo("Por el Momento Campus Solo Cuenta con 3 Areas Asignalas en el Menu de Administrar Rutas")
-        """
-        nombre = reusable.checkInput("str", "Ingresa el Nombre del Area")
-        areas.update({nombre: {"morning": [], "afternoon": []}})
-        reusable.showSuccess("Area Creada Correctamente")
-        db.newFile(**campuslandDB)
-        """
+    mn.showHeader("zones")
+    zones = campuslandDB.get("zones")
+    reusable.printList(list(zones.keys()))
+    opcion = input("\nEstas Seguro que Desea Crear Nueva Area de Entrenamiento? ")
+    if opcion.lower():
+        print("Por el Momento Campus Solo Cuenta con 3 Areas Asignalas en el Menu de Administrar Rutas")
     return
 
 def newRuta():
     loadCampuslanDB()
-    menu.showHeader("rutas1")
+    mn.showHeader("rutas1")
     rutas = campuslandDB.get("rutas")
     reusable.printList(list(rutas.keys()))
     while(True):
-        opcion = input(menu.showMenu("rutaMenu"))
+        opcion = input(mn.showMenu("rutaMenu"))
         if(opcion == "1"):
             ruta = {}
-            rutaName = reusable.checkInput("str", "Nombre de La Ruta Nueva").replace(" ", "")
+            rutaName = input("str", "Nombre de La Ruta Nueva").replace(" ", "")
             if not (rutaName in rutas):
-                ruta.update({"nombreRuta":rutaName})
+                ruta.update({"NameRt":rutaName})
 
                 print("Fecha de Inicio de La ruta")
-                ruta.update({"fechaInicio": reusable.newDate()})
+                ruta.update({"FchInc": reusable.newDate()})
                 print("Fecha de Finalizacion de la Ruta")
-                ruta.update({"fechaFinal": reusable.newDate()})
+                ruta.update({"FchFnl": reusable.newDate()})
 
                 jornada = selectJornada()
                 ruta.update({"jornada": jornada})
@@ -137,9 +132,9 @@ def newRuta():
                     grupos = campuslandDB.get("grupos")
                     grupos.update({data["grupo"]:[]})
 
-                    ruta.update({"area":selectArea(jornada, data["grupo"])})
+                    ruta.update({"zone":selectzone(jornada, data["grupo"])})
 
-                    menu.showHeader("thematic")
+                    mn.showHeader("thematic")
                     ruta.update(selectTematics())
                     
                     rutas.update({rutaName:ruta})
@@ -150,13 +145,13 @@ def newRuta():
 
 
             else:
-                reusable.showError("Esa Ruta Ya Existe Intenta con Otro Nombre")
+                print("Esa Ruta Ya Existe Intenta con Otro Nombre")
         elif(opcion == "2"):
-            reusable.showInfo("Opcion No Disponible por el momento")
+            print("Opcion No Disponible por el momento")
         elif(opcion == "3"):
             return
         else:
-            reusable.showError("Error Opcion No Reconocida")
+            print("Error Opcion No Reconocida")
     
 
 
@@ -164,9 +159,9 @@ def selectTrainer(jornada):
     trainers = campuslandDB.get("trainers")
     trainersList = list(trainers.keys())
     while True:
-        menu.showHeader("trainers")
+        mn.showHeader("trainers")
         reusable.printList(trainersList)
-        nombre = reusable.checkInput("str", "Ingresa el Nombre del Trainer")
+        nombre = print("str", "Ingresa el Nombre del Trainer")
         if nombre in trainersList:
             trainer = trainers.get(nombre)
             if trainer["jornada"] == jornada:
@@ -176,41 +171,39 @@ def selectTrainer(jornada):
                     grupos.append(grupo)
                     return {"trainer":trainer["nombre"], "grupo":grupo}
                 else:
-                    reusable.showInfo(f"El Trainer {nombre} No Tiene Disponibilidad Para Mas Grupos")
+                    print(f"El Trainer {nombre} No Tiene Disponibilidad Para Mas Grupos")
             else:
-                reusable.showInfo(f"El Trainer {nombre} No Tiene Disponibilidad en esa jornada")
+                print(f"El Trainer {nombre} No Tiene Disponibilidad en esa jornada")
         else:
-            reusable.showError(f"El Trainer {nombre} No Existe Intentalo de nuevo")
-
-        if not (reusable.yesORnot("Desea Intentar con Otro Trainer")):
+            print(f"El Trainer {nombre} No Existe Intentalo de nuevo")
+        Eleccion = input("Desea Intentar con Otro Trainer")
+        if not Eleccion.lower():
             return
 
 
-def selectArea(jornada, grupo):
+def selectzone(jornada, grupo):
     while(True):
-        areas = campuslandDB.get("areas")
-        menu.showHeader("areas")
-        reusable.printList(list(areas.keys()))
-        opcion = reusable.checkInput("str", "Ingresa el Nombre del Area")
-        if opcion in areas:
-            area = areas.get(opcion)
-            if (len(area[jornada]) < 2):
-                area[jornada].append(grupo)
-                return area["nombre"]
+        zones = campuslandDB.get("zones")
+        mn.showHeader("zones")
+        reusable.printList(list(zones.keys()))
+        opcion = input("str", "Ingresa el Nombre del Area")
+        if opcion in zones:
+            zone = zones.get(opcion)
+            if (len(zone[jornada]) < 2):
+                zone[jornada].append(grupo)
+                return zone["nombre"]
             else:
-                reusable.showInfo("Esta Area No Cuenta Con Espacio Disponible Intentalo Con Otra o en Jornada Contraria")
+                print("Esta Area No Cuenta Con Espacio Disponible Intentalo Con Otra o en Jornada Contraria")
         else:
-            reusable.showError(f"El Area {opcion} No Existe Intentalo de Nuevo")
+            print(f"El Area {opcion} No Existe Intentalo de Nuevo")
 
 def selectJornada():
     while(True):
-        opcion = input(menu.showMenu("jornada"))
+        opcion = input("En este momento hay 1) mañana, 2) tarde")
         if opcion == "1":
             return "morning"
-        elif(opcion == "2"):
-            return "afternoon"
         else:
-            reusable.showError("Opcion No Valida")
+            print("Opcion de la tarde Todavia no disponible")
         
 
 def selectTematics():
@@ -223,28 +216,28 @@ def selectTematics():
     }
     print("Ingresa el Nombre de Los Temas A Tratar en Fundamentos de Programacion")
     print("Temas Recomendados: (Introducción a la algoritmia, PSeInt y Python)")
-    thematic["fundamentosProgramacion"].append(reusable.checkInput("str", "Ingresa el Tema Principal"))
-    thematic["fundamentosProgramacion"].append(reusable.checkInput("str", "Ingresa el Tema Secundario"))
+    thematic["fundamentosProgramacion"].append(  input("str", "Ingresa el Tema Principal"))
+    thematic["fundamentosProgramacion"].append(  input("str", "Ingresa el Tema Secundario"))
 
     print("Ingresa el Nombre de Los Temas A Tratar en Programación Web")
     print("Temas Recomendados: (HTML, CSS y Bootstrap)")
-    thematic["programacionWEB"].append(reusable.checkInput("str", "Ingresa el Tema Principal"))
-    thematic["programacionWEB"].append(reusable.checkInput("str", "Ingresa el Tema Secundario"))
+    thematic["programacionWEB"].append(  input("str", "Ingresa el Tema Principal"))
+    thematic["programacionWEB"].append(  input("str", "Ingresa el Tema Secundario"))
 
     print("Ingresa el Nombre de Los Temas A Tratar en Programación formal")
     print("Temas Recomendados: (Java, JavaScript, C#)")
-    thematic["programacionFormal"].append(reusable.checkInput("str", "Ingresa el Tema Principal"))
-    thematic["programacionFormal"].append(reusable.checkInput("str", "Ingresa el Tema Secundario"))
+    thematic["programacionFormal"].append(  input("str", "Ingresa el Tema Principal"))
+    thematic["programacionFormal"].append(  input("str", "Ingresa el Tema Secundario"))
 
     print("Ingresa el Nombre de Los Temas A Tratar en Bases de datos")
     print("Temas Recomendados: (Mysql, MongoDb y Postgresql)")
-    thematic["basesDatos"].append(reusable.checkInput("str", "Ingresa el Tema Principal"))
-    thematic["basesDatos"].append(reusable.checkInput("str", "Ingresa el Tema Secundario"))
+    thematic["basesDatos"].append(  input("str", "Ingresa el Tema Principal"))
+    thematic["basesDatos"].append(  input("str", "Ingresa el Tema Secundario"))
 
     print("Ingresa el Nombre de Los Temas A Tratar en Backend ")
     print("Temas Recomendados: (NetCore, Spring Boot, NodeJS y Express)")
-    thematic["backend"].append(reusable.checkInput("str", "Ingresa el Tema Principal"))
-    thematic["backend"].append(reusable.checkInput("str", "Ingresa el Tema Secundario"))
+    thematic["backend"].append(  input("str", "Ingresa el Tema Principal"))
+    thematic["backend"].append(  input("str", "Ingresa el Tema Secundario"))
 
     return thematic
 
@@ -253,7 +246,7 @@ def newTrainer():
     loadCampuslanDB()
     trainers = campuslandDB.get("trainers")
     listTrainers = list(trainers.keys())
-    menu.showHeader("trainer")
+    mn.showHeader("trainer")
     uid = (len(listTrainers) + 1)
     data = checkTrainer(listTrainers)
     if data:
@@ -264,7 +257,7 @@ def newTrainer():
             print("Ingresa La Jornada del Trainer")
             print("1.Mañana")
             print("2.Tarde")
-            opcion = reusable.checkInput("str", "")
+            opcion =   input("str", "")
             if (opcion == "1"):
                 jornada = "morning"
                 break
@@ -272,20 +265,20 @@ def newTrainer():
                 jornada = "afternoon"
                 break
             else:
-                reusable.showError("Opcion No Valida")
+                print("Opcion No Valida")
         
         trainer.update({"jornada":jornada})
         trainer.update({"grupos":[]})
         trainers.update({data["key"]:trainer})
         db.newFile(**campuslandDB)
-        reusable.showSuccess("El Trainer Se Registro Correctamente")
+        print("El Trainer Se Registro Correctamente")
     else:
-        reusable.showInfo("Este Trainer Ya Existe")
+        print("Este Trainer Ya Existe")
         return
 
 def checkTrainer(listTrainers:list):
     while True:
-        nombre = reusable.checkInput("str", "Ingresa el Nombre del Nuevo Trainer")
+        nombre = input("str", "Ingresa el Nombre del Nuevo Trainer")
         nombres = nombre.split(" ")
         for name in nombres:
             if name:
@@ -294,10 +287,10 @@ def checkTrainer(listTrainers:list):
         
         return
 
-URL = "campusland.json"
+DataBaseCampus = "campusland.json"
 
 def loadCampuslanDB():
-    db.URL = URL
+    db.DataBaseCampus = DataBaseCampus
     campuslandDB.update(db.checkFile(**campuslandDB))
 
 

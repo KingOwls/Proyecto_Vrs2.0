@@ -1,39 +1,39 @@
-import services.campers as sc
-import services.corefile as db
+import Modulos.campers as sc
+import Modulos.corefile as db
 import templates.reusable as reusable
 import templates.menus as menu
-import services.campusland as campus
+import Modulos.campusland as campus
 
 
 def pruebaAdmision():
     while(True):
         menu.showHeader("prueba")
-        camper = sc.getCamper()
-        if camper:
-            if (camper["estado"] == "inscrito"):
-                teorica = reusable.checkInput("float", f"Ingresa la nota de la prueba teorica de {camper['nombre']}")
-                practica = reusable.checkInput("float", f"Ingresa la nota de la prueba practica de {camper['nombre']}")
+        Estudiante = sc.getEstudiante()
+        if Estudiante:
+            if (Estudiante["estado"] == "inscrito"):
+                teorica = reusable.checkInput("float", f"Ingresa la nota de la prueba teorica de {Estudiante['nombre']}")
+                practica = reusable.checkInput("float", f"Ingresa la nota de la prueba practica de {Estudiante['nombre']}")
                 nota = (teorica + practica) / 2
                 if (nota >= 60):
-                    camper["estado"] = "aprobado"
+                    Estudiante["estado"] = "aprobado"
                 else:
-                    camper["estado"] = "no_aprobado"
+                    Estudiante["estado"] = "no_aprobado"
 
                 reusable.showSuccess("Se Actualizo la Nota Correctamente")
                 
-            elif(camper["estado"] == "no_aprobado"):
-                reusable.showInfo(f"El Camper {camper['nombre']} ya Presento las Pruebas y NO fue apto")
-            elif(camper["estado"] == "aprobado"):
-                reusable.showInfo(f"El Camper {camper['nombre']} ya Presento las Pruebas y Aprobo")
+            elif(Estudiante["estado"] == "no_aprobado"):
+                reusable.showInfo(f"El Estudiante {Estudiante['nombre']} ya Presento las Pruebas y NO fue apto")
+            elif(Estudiante["estado"] == "aprobado"):
+                reusable.showInfo(f"El Estudiante {Estudiante['nombre']} ya Presento las Pruebas y Aprobo")
             else:
-                reusable.showInfo(f"El estado de {camper['nombre']} no es apto para esta opcion")
+                reusable.showInfo(f"El estado de {Estudiante['nombre']} no es apto para esta opcion")
 
         else:
-            reusable.showInfo("No se Encontro el Camper")
+            reusable.showInfo("No se Encontro el Estudiante")
         
-        if(not reusable.yesORnot("Desea Registrar la Nota de otro Camper")):
-                db.URL = "campers.json"
-                db.newFile(**sc.campers)
+        if(not reusable.yesORnot("Desea Registrar la Nota de otro Estudiante")):
+                db.URL = "Estudiantes.json"
+                db.newFile(**sc.Estudiantes)
                 break
 
 def menuNotas():
@@ -54,11 +54,11 @@ def menuNotas():
 
 def registrarNotas():
     menu.showHeader("registrarNotas")
-    camper = sc.getCamper()
-    if camper:
-        if camper["estado"] == "estudiando":
+    Estudiante = sc.getEstudiante()
+    if Estudiante:
+        if Estudiante["estado"] == "estudiando":
             key = menuNotas()
-            notas = camper.get("notas")
+            notas = Estudiante.get("notas")
             if key in list(notas.keys()):
                 reusable.showError("Las Notas De Este Modulo Ya se Registraron")
             else:
@@ -73,30 +73,30 @@ def registrarNotas():
                     "definitiva": definitiva
                 }})
                 db.URL = sc.URL
-                db.newFile(**sc.campers)
+                db.newFile(**sc.Estudiantes)
                 reusable.showSuccess("Se Registraron las Notas Correctamente")
         else:
-            reusable.showInfo("El Estado del Camper No es Valido Para Esta Opcion")
+            reusable.showInfo("El Estado del Estudiante No es Valido Para Esta Opcion")
     else:
-        reusable.showError("No Se Encontro al Camper")
+        reusable.showError("No Se Encontro al Estudiante")
 
 def moduloReportes():
-    sc.loadCampers()
+    sc.BusquedaEstudiante()
     campus.loadCampuslanDB()
-    campers = sc.campers
+    Estudiantes = sc.Estudiantes
     campuslandDB = campus.campuslandDB
     while True:
         opcion = input(menu.showMenu("reportes"))
         if (opcion == "1"):
-            reusable.printList(newReporte("inscrito", campers))
+            reusable.printList(newReporte("inscrito", Estudiantes))
         elif(opcion == "2"):
-            reusable.printList(newReporte("aprobado", campers))
+            reusable.printList(newReporte("aprobado", Estudiantes))
         elif(opcion == "3"):
             menu.showHeader("trainers")
             trainers = campuslandDB.get("trainers")
             reusable.printList(list(trainers.keys()))
         elif(opcion == "4"):
-            reusable.printList(bajoNotas(campers))
+            reusable.printList(bajoNotas(Estudiantes))
         elif(opcion == "5"):
             menu.showHeader("rutas1")
             rutas = campuslandDB["rutas"]
@@ -110,16 +110,16 @@ def moduloReportes():
                 for trainer in ruta["trainers"]:
                     print(trainer.upper(), end="")
                 print("")
-                print(f"Campers De la Ruta {ruta['nombreRuta']}")
+                print(f"Estudiantes De la Ruta {ruta['nombreRuta']}")
                 grupos = ruta["grupos"]
                 estudiantes = []
-                for camper in campers.values():
-                    if "grupo" in camper.keys():
-                        if (camper["grupo"] in grupos):
-                            estudiantes.append(f"CC: {camper['cc']} Nombre: {camper['nombre']}")
+                for Estudiante in Estudiantes.values():
+                    if "grupo" in Estudiante.keys():
+                        if (Estudiante["grupo"] in grupos):
+                            estudiantes.append(f"CC: {Estudiante['cc']} Nombre: {Estudiante['nombre']}")
                 
                 if not len(estudiantes):
-                    print("No Se Encontraron Campers")
+                    print("No Se Encontraron Estudiantes")
 
                 reusable.printList(estudiantes)
             else:
@@ -128,8 +128,8 @@ def moduloReportes():
             perModul = {}
             pasaron = 0
             perdieron = 0
-            for camper in campers.values():
-                notas = camper["notas"]
+            for Estudiante in Estudiantes.values():
+                notas = Estudiante["notas"]
                 for key,value in notas.items():
                     nota = value["definitiva"]
                     if nota < 60:
@@ -154,14 +154,14 @@ def moduloReportes():
             reusable.showError("Opcion No Valida Intentalo de Nuevo")
 
 
-def bajoNotas(campers):
+def bajoNotas(Estudiantes):
     data = []
-    for camper in campers.values():
-        notas = camper["notas"]
+    for Estudiante in Estudiantes.values():
+        notas = Estudiante["notas"]
         for modulo in notas.values():
             nota = modulo["definitiva"]
             if nota < 60:
-                data.append(f"CC: {camper['cc']} Nombre: {camper['nombre']}")
+                data.append(f"CC: {Estudiante['cc']} Nombre: {Estudiante['nombre']}")
     
     menu.showHeader("bajoRendimiento")
     if not len(data):
@@ -170,13 +170,13 @@ def bajoNotas(campers):
     return data
         
 
-def newReporte(estado, campers:dict):
+def newReporte(estado, Estudiantes:dict):
     if estado:
         menu.showHeader(estado)
         data = []
-        for key, value in campers.items():
+        for key, value in Estudiantes.items():
                 if value["estado"] == estado:
-                    data.append(f"Nombre del Camper: {value['nombre']}")
+                    data.append(f"Nombre del Estudiante: {value['nombre']}")
 
     if not len(data):
         print("No Se Encontraron Datos Con esa Caracteristica")
