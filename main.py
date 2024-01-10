@@ -6,13 +6,13 @@ import os
 
 
 
-if __name__ == '__main__':
-    while (True):
+
+while (True):
         opMenu = input("Buenos dias: ¿que desea hacer hoy?: \n1) Desicion de Estudiante\n 2)registro de prueba de admision\n 3)registro de area de entrenamiento\n 4)registro de ruta de entrenamiento\n 5)gestionar matricula\n 6)registrar notas\n 7)registrar nuevo trainer\n 8)generar reportes\n 9)salir\n")
         if (opMenu == "1"):
             Desicion= input("Desea: 1)Registrar Estudiante, 2) Editar Estudiante, 3) Eliminar Estudiante")
             if(Desicion == "1"):
-                print("Eliminar Estudiante")
+                print("registrar Estudiante")
                 os.system("pause")
                 sc.newEstudiante()
             elif(opMenu == "2"):

@@ -2,7 +2,7 @@ import json
 import os
 
 
-PATH = "./PROYECTO_VRS_2/data"
+PATH = "Proyecto_Vrs_2\data"
 URL = ""
 
 def newFile(**kwargs):
